@@ -29,8 +29,19 @@ pygame.display.set_caption("Maze Generator and Solver")
 
 clock = pygame.time.Clock()
 
-#wall structure
+# northWall[r][c]
+# Represents the TOP wall of each cell (r, c)
+# 1 = wall exists (blocked)
+# 0 = wall removed (open path)
+
+# We use ROWS + 1 because we also store the bottom boundary line
 northWall = [[1 for _ in range(COLS)] for _ in range(ROWS + 1)]
+
+# eastWall[r][c]
+# Represents the RIGHT wall of each cell (r, c)
+
+
+# We use COLS + 1 because we also store the right boundary line
 eastWall = [[1 for _ in range(COLS + 1)] for _ in range(ROWS)]
 
 visited = [[False for _ in range(COLS)] for _ in range(ROWS)]
