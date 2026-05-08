@@ -2,6 +2,7 @@ import pygame
 import random
 import sys
 
+# to configure the grid
 ROWS = 20
 COLS = 20
 CELL_SIZE = 35
@@ -11,6 +12,7 @@ HEIGHT = ROWS * CELL_SIZE
 
 FPS = 60
 
+#to create extra opening
 EXTRA_WALL_CHANCE = 20
 
 BLACK = (0, 0, 0)
@@ -27,8 +29,8 @@ pygame.display.set_caption("Maze Generator and Solver")
 
 clock = pygame.time.Clock()
 
+#wall structure
 northWall = [[1 for _ in range(COLS)] for _ in range(ROWS + 1)]
-
 eastWall = [[1 for _ in range(COLS + 1)] for _ in range(ROWS)]
 
 visited = [[False for _ in range(COLS)] for _ in range(ROWS)]
@@ -37,6 +39,7 @@ def draw_maze():
 
     screen.fill(BLACK)
 
+#draw the horizontal rows
     for r in range(ROWS):
         for c in range(COLS):
 
@@ -64,6 +67,7 @@ def draw_maze():
 
                 pygame.draw.line(screen, WHITE, (x, y), (x, y + CELL_SIZE), 2)
 
+#remove walls between the cells
 def remove_wall(current, nxt):
 
     r1, c1 = current
@@ -128,6 +132,20 @@ def generate_maze():
 
             remove_wall(current, next_cell)
 
+            if random.randint(1, EXTRA_WALL_CHANCE) == 1:
+
+                extra_dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+                random.shuffle(extra_dirs)
+
+                for dr, dc in extra_dirs:
+
+                    er = r + dr
+                    ec = c + dc
+
+                    if 0 <= er < ROWS and 0 <= ec < COLS:
+                        remove_wall(current, (er, ec))
+                        break
+
             current = next_cell
 
             visited[current[0]][current[1]] = True
@@ -138,9 +156,13 @@ def generate_maze():
 
         draw_maze()
 
+        x = current[1] * CELL_SIZE + CELL_SIZE // 2
+        y = current[0] * CELL_SIZE + CELL_SIZE // 2
+
+        pygame.draw.circle(screen, GREEN, (x, y), CELL_SIZE // 4)
+
         pygame.display.update()
         pygame.time.delay(20)
-
 
 start = (random.randint(0, ROWS - 1), 0)
 end = (random.randint(0, ROWS - 1), COLS - 1)
@@ -169,9 +191,7 @@ def get_valid_moves(r, c):
 def solve_maze():
 
     stack = [start]
-
     visited_solver = set()
-
     dead_ends = set()
 
     while stack:
@@ -198,6 +218,7 @@ def solve_maze():
 
         if possible_moves:
             stack.append(random.choice(possible_moves))
+
         else:
             dead_ends.add(current)
             stack.pop()
@@ -205,36 +226,34 @@ def solve_maze():
         draw_maze()
 
         for cell in dead_ends:
+
             x = cell[1] * CELL_SIZE + CELL_SIZE // 2
             y = cell[0] * CELL_SIZE + CELL_SIZE // 2
+
             pygame.draw.circle(screen, BLUE, (x, y), CELL_SIZE // 5)
 
         for cell in stack:
+
             x = cell[1] * CELL_SIZE + CELL_SIZE // 2
             y = cell[0] * CELL_SIZE + CELL_SIZE // 2
+
             pygame.draw.circle(screen, RED, (x, y), CELL_SIZE // 4)
 
         pygame.display.update()
         pygame.time.delay(40)
-# FULL FINAL CODE (UNCHANGED FROM YOUR ORIGINAL)
 
-EXTRA_WALL_CHANCE = 20
+generate_maze()
 
-# (everything same as above)
+solution = solve_maze()
 
-# BONUS INSIDE generate_maze (already present)
+print("Maze solved!")
 
-if random.randint(1, EXTRA_WALL_CHANCE) == 1:
+#to keep the window open
+while True:
 
-    extra_dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
 
-    random.shuffle(extra_dirs)
-
-    for dr, dc in extra_dirs:
-
-        er = r + dr
-        ec = c + dc
-
-        if 0 <= er < ROWS and 0 <= ec < COLS:
-            remove_wall(current, (er, ec))
-            break
+    clock.tick(FPS)
