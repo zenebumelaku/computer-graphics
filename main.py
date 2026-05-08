@@ -26,3 +26,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Maze Generator and Solver")
 
 clock = pygame.time.Clock()
+
+northWall = [[1 for _ in range(COLS)] for _ in range(ROWS + 1)]
+
+eastWall = [[1 for _ in range(COLS + 1)] for _ in range(ROWS)]
+
+visited = [[False for _ in range(COLS)] for _ in range(ROWS)]
