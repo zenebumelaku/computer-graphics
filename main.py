@@ -140,3 +140,79 @@ def generate_maze():
 
         pygame.display.update()
         pygame.time.delay(20)
+
+
+start = (random.randint(0, ROWS - 1), 0)
+end = (random.randint(0, ROWS - 1), COLS - 1)
+
+eastWall[start[0]][0] = 0
+eastWall[end[0]][COLS] = 0
+
+def get_valid_moves(r, c):
+
+    moves = []
+
+    if r > 0 and northWall[r][c] == 0:
+        moves.append((r - 1, c))
+
+    if r < ROWS - 1 and northWall[r + 1][c] == 0:
+        moves.append((r + 1, c))
+
+    if c > 0 and eastWall[r][c] == 0:
+        moves.append((r, c - 1))
+
+    if c < COLS - 1 and eastWall[r][c + 1] == 0:
+        moves.append((r, c + 1))
+
+    return moves
+
+def solve_maze():
+
+    stack = [start]
+
+    visited_solver = set()
+
+    dead_ends = set()
+
+    while stack:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        current = stack[-1]
+
+        if current == end:
+            return stack
+
+        visited_solver.add(current)
+
+        r, c = current
+
+        possible_moves = []
+
+        for move in get_valid_moves(r, c):
+            if move not in visited_solver:
+                possible_moves.append(move)
+
+        if possible_moves:
+            stack.append(random.choice(possible_moves))
+        else:
+            dead_ends.add(current)
+            stack.pop()
+
+        draw_maze()
+
+        for cell in dead_ends:
+            x = cell[1] * CELL_SIZE + CELL_SIZE // 2
+            y = cell[0] * CELL_SIZE + CELL_SIZE // 2
+            pygame.draw.circle(screen, BLUE, (x, y), CELL_SIZE // 5)
+
+        for cell in stack:
+            x = cell[1] * CELL_SIZE + CELL_SIZE // 2
+            y = cell[0] * CELL_SIZE + CELL_SIZE // 2
+            pygame.draw.circle(screen, RED, (x, y), CELL_SIZE // 4)
+
+        pygame.display.update()
+        pygame.time.delay(40)
