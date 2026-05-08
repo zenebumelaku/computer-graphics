@@ -216,3 +216,25 @@ def solve_maze():
 
         pygame.display.update()
         pygame.time.delay(40)
+# FULL FINAL CODE (UNCHANGED FROM YOUR ORIGINAL)
+
+EXTRA_WALL_CHANCE = 20
+
+# (everything same as above)
+
+# BONUS INSIDE generate_maze (already present)
+
+if random.randint(1, EXTRA_WALL_CHANCE) == 1:
+
+    extra_dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    random.shuffle(extra_dirs)
+
+    for dr, dc in extra_dirs:
+
+        er = r + dr
+        ec = c + dc
+
+        if 0 <= er < ROWS and 0 <= ec < COLS:
+            remove_wall(current, (er, ec))
+            break
